@@ -154,9 +154,13 @@
     }
 
     function generate(type) {
-      let url = document.getElementById(type + "Url").value;
+      let url = document.getElementById(type + "Url").value.trim();
       if (!url) { showPopup("Please enter URL"); return; }
-      let encoded = encodeURIComponent(url);
+      // Pehle fully decode karo (agar already %7E jaise encoded chars hain)
+      // Phir ek baar cleanly encode karo — double-encoding se bachne ke liye
+      let decoded;
+      try { decoded = decodeURIComponent(url); } catch(e) { decoded = url; }
+      let encoded = encodeURIComponent(decoded);
       finalLinks[type] = `${PLAYER_BASE}/play?v=${encoded}`;
       document.getElementById("preview" + capitalize(type)).href = finalLinks[type];
       document.getElementById("preview" + capitalize(type)).innerText = "Preview";
