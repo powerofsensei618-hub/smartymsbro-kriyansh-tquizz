@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEARN WITH JBKRIYANSH</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f8f9fa; }
+    h1 { background: linear-gradient(90deg, #0066ff, #0099ff); color: white; padding: 15px; border-radius: 8px; }
+
+    /* Luxury Orange Title Box */
+    .orange-box {
+      display: inline-block;
+      background: #ffa94d;
+      color: black;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .card { margin: 20px auto; padding: 20px; border-radius: 12px; max-width: 400px; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+    input { width: 95%; padding: 15px; margin: 12px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+
+    button, a { display: block; width: 90%; margin: 8px auto; padding: 14px; border: none; border-radius: 8px; font-weight: bold; text-decoration: none; text-align: center; font-size: 15px; cursor: pointer; }
+
+    /* Buttons */
+    .live { background: #0066ff; color: white; }
+    .recorded { background: #ff922b; color: white; }
+    .copy { background: #28a745; color: white; }
+    .preview { background: #ffa94d; color: white; }
+    .refresh { background: #6c5ce7; color: white; }
+    .back { background: red; color: white; }
+
+    /* Option Box */
+    .option { background: #f1f1f1; cursor: pointer; border: 2px solid pink; margin: 12px 0; border-radius: 12px; padding: 12px; }
+    .option.live-box { background: #ffcccc; }
+    .option.recorded-box { background: #ccffcc; }
+
+    .tag { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; color: white; margin-bottom: 10px; }
+    .tag.live { background: red; }
+    .tag.recorded { background: purple; }
+
+    footer { margin-top: 20px; font-size: 13px; color: #555; }
+    footer span { color: red; }
+
+    /* Popup */
+    .popup {
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center; align-items: center;
+    }
+    .popup-content {
+      background: white; padding: 20px; border-radius: 12px;
+      text-align: center; width: 80%; max-width: 350px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .popup-content h3 { margin-bottom: 15px; }
+    .popup-btn {
+      background: #0066ff; color: white;
+      padding: 10px 20px; margin: 8px;
+      border: none; border-radius: 6px; cursor: pointer;
+    }
+
+    /* Mini Video Preview */
+    .video-box {
+      margin-top: 15px;
+      display: none;
+    }
+    video {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>LEARN WITH JBKRIYANSH</h1>
+
+  <!-- Home Screen -->
+  <div id="home" class="card">
+    <div class="orange-box">Choose Stream Type</div>
+    <div class="option live-box" onclick="showSection('live')">
+      <h3>📡 Live Stream</h3>
+      <p>Generate links for live streaming content</p>
+    </div>
+    <div class="option recorded-box" onclick="showSection('recorded')">
+      <h3>🎥 Recorded Video</h3>
+      <p>Generate links for recorded video content</p>
+    </div>
+  </div>
+
+  <!-- Live Stream Section -->
+  <div id="live" class="card" style="display:none;">
+    <span class="tag live">🔴 LIVE</span>
+    <h3>Enter Live Stream URL</h3>
+    <input type="text" id="liveUrl" placeholder="https://example.com/index.m3u8">
+    <button class="live" onclick="generate('live')">Generate</button>
+    <button class="copy" onclick="copyLink('live')">Copy</button>
+    <a id="previewLive" class="preview" target="_blank">Preview</a>
+    <button class="refresh" onclick="refresh('live')">Refresh</button>
+    <button class="back" onclick="backHome()">← Back</button>
+    <div class="video-box" id="videoBoxLive">
+      <video id="videoLive" controls></video>
+    </div>
+  </div>
+
+  <!-- Recorded Video Section -->
+  <div id="recorded" class="card" style="display:none;">
+    <span class="tag recorded">📀 RECORDED</span>
+    <h3>Enter Recorded Video URL</h3>
+    <input type="text" id="recordedUrl" placeholder="https://example.com/video.mp4">
+    <button class="recorded" onclick="generate('recorded')">Generate</button>
+    <button class="copy" onclick="copyLink('recorded')">Copy</button>
+    <a id="previewRecorded" class="preview" target="_blank">Preview</a>
+    <button class="refresh" onclick="refresh('recorded')">Refresh</button>
+    <button class="back" onclick="backHome()">← Back</button>
+    <div class="video-box" id="videoBoxRecorded">
+      <video id="videoRecorded" controls></video>
+    </div>
+  </div>
+
+  <footer>© LEARN WITH JBKRIYANSH | Made with <span>❤</span></footer>
+
+  <!-- Popup -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <h3 id="popupMessage"></h3>
+      <button class="popup-btn" onclick="closePopup()">BACK</button>
+      <button class="popup-btn" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    let finalLinks = { live: "", recorded: "" };
+
+    function showSection(type) {
+      document.getElementById("home").style.display = "none";
+      document.getElementById("live").style.display = "none";
+      document.getElementById("recorded").style.display = "none";
+      document.getElementById(type).style.display = "block";
+    }
+
+    function backHome() {
+      document.getElementById("home").style.display = "block";
+      document.getElementById("live").style.display = "none";
+      document.getElementById("recorded").style.display = "none";
+    }
+
+    function generate(type) {
+      let url = document.getElementById(type + "Url").value;
+      if (!url) { showPopup("Please enter URL"); return; }
+      let encoded = encodeURIComponent(url);
+      finalLinks[type] = `https://learnwithpw-recorded.onrender.com/play?v=${encoded}`;
+      document.getElementById("preview" + capitalize(type)).href = finalLinks[type];
+      document.getElementById("preview" + capitalize(type)).innerText = "Preview";
+
+      // Mini Video Preview
+      document.getElementById("videoBox" + capitalize(type)).style.display = "block";
+      document.getElementById("video" + capitalize(type)).src = url;
+
+      showPopup("Your Link is Generated Successfully✅😎");
+    }
+
+    function copyLink(type) {
+      if (!finalLinks[type]) { showPopup("Generate link first!"); return; }
+      navigator.clipboard.writeText(finalLinks[type]);
+      showPopup("Link is Copied Successfully✅🥳");
+    }
+
+    function refresh(type) {
+      document.getElementById(type + "Url").value = "";
+      finalLinks[type] = "";
+      document.getElementById("preview" + capitalize(type)).href = "#";
+      document.getElementById("preview" + capitalize(type)).innerText = "Preview";
+      document.getElementById("videoBox" + capitalize(type)).style.display = "none";
+      document.getElementById("video" + capitalize(type)).src = "";
+      showPopup("Refreshed 🔄");
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Popup Controls
+    function showPopup(message) {
+      document.getElementById("popupMessage").innerText = message;
+      document.getElementById("popup").style.display = "flex";
+    }
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+  </script>
+</body>
+</html>
