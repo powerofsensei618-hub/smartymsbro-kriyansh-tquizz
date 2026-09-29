@@ -135,6 +135,9 @@
   </div>
 
   <script>
+    // ⚠️ Yaha apne NAYE player service (recordednew) ka Render URL daalo - bina last "/" ke
+    const PLAYER_BASE = "https://recordednew.onrender.com";
+
     let finalLinks = { live: "", recorded: "" };
 
     function showSection(type) {
@@ -154,7 +157,7 @@
       let url = document.getElementById(type + "Url").value;
       if (!url) { showPopup("Please enter URL"); return; }
       let encoded = encodeURIComponent(url);
-      finalLinks[type] = `https://learnwithpw-recorded-V2.onrender.com/play?v=${encoded}`;
+      finalLinks[type] = `${PLAYER_BASE}/play?v=${encoded}`;
       document.getElementById("preview" + capitalize(type)).href = finalLinks[type];
       document.getElementById("preview" + capitalize(type)).innerText = "Preview";
 
