@@ -154,7 +154,7 @@
       let url = document.getElementById(type + "Url").value;
       if (!url) { showPopup("Please enter URL"); return; }
       let encoded = encodeURIComponent(url);
-      finalLinks[type] = `https://learnwithpw-recorded.onrender.com/play?v=${encoded}`;
+      finalLinks[type] = `https://learnwithpw-recorded-V2.onrender.com/play?v=${encoded}`;
       document.getElementById("preview" + capitalize(type)).href = finalLinks[type];
       document.getElementById("preview" + capitalize(type)).innerText = "Preview";
 
