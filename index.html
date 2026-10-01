@@ -135,8 +135,8 @@
   </div>
 
   <script>
-    // ⚠️ Yaha apne NAYE player service (recordednew) ka Render URL daalo - bina last "/" ke
-    const PLAYER_BASE = "https://learnwithpw-recorded-V3.onrender.com";
+    // Player service ka Render URL (bina last "/" ke)
+    const PLAYER_BASE = "https://learnwithpw-recorded-v3.onrender.com";
 
     let finalLinks = { live: "", recorded: "" };
 
@@ -156,11 +156,9 @@
     function generate(type) {
       let url = document.getElementById(type + "Url").value.trim();
       if (!url) { showPopup("Please enter URL"); return; }
-      // Pehle fully decode karo (agar already %7E jaise encoded chars hain)
-      // Phir ek baar cleanly encode karo — double-encoding se bachne ke liye
-      let decoded;
-      try { decoded = decodeURIComponent(url); } catch(e) { decoded = url; }
-      let encoded = encodeURIComponent(decoded);
+      // Jo %XX already encoded hai usse decode NAHI karna; raw "~" ko PW-style "%7E" banao,
+      // phir poora URL encode (double-encode: %7E -> %257E)
+      let encoded = encodeURIComponent(url.replace(/~/g, "%7E"));
       finalLinks[type] = `${PLAYER_BASE}/play?v=${encoded}`;
       document.getElementById("preview" + capitalize(type)).href = finalLinks[type];
       document.getElementById("preview" + capitalize(type)).innerText = "Preview";
